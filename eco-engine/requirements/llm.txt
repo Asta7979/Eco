@@ -1,0 +1,3 @@
+-r base.txt
+networkx>=3.2.0                  # action catalogue validation
+anthropic>=0.117.0               # the only service that holds ANTHROPIC_API_KEY

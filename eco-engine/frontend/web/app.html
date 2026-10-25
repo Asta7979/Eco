@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en-GB" class="auth-pending">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eco | Assessment</title>
+  <meta name="description" content="Assess a UK home: Green Home Score, fabric-first retrofit roadmap, dual-fuel carbon impact, computer vision photo assistance, indicative value range and a guarded AI advisor.">
+  <meta name="theme-color" content="#060709">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Damion&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="theme-init.js"></script>
+</head>
+<body class="app-body">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="mobile-top">
+    <a class="brand" href="./"><span class="brand-word">Eco</span></a>
+    <a class="icon-btn" href="login.html?next=app.html" aria-label="Account"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-user"></use></svg></a>
+  </div>
+
+  <div class="app-shell">
+    <!-- ================= Rail ================= -->
+    <nav class="app-rail" aria-label="App">
+      <a class="brand" href="./" aria-label="Eco home"><span class="brand-word">Eco</span></a>
+      <span class="rail-label">Workspace</span>
+      <div class="tabs" role="tablist" aria-label="Views" aria-orientation="vertical">
+        <button class="tab" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true"><svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg><span>Overview</span></button>
+        <button class="tab" role="tab" id="tab-assessment" aria-controls="panel-assessment" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-home"></use></svg><span>Assessment</span></button>
+        <button class="tab" role="tab" id="tab-vision" aria-controls="panel-vision" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-scan"></use></svg><span>Vision AI</span><em class="tab-tag">NEW</em></button>
+        <button class="tab" role="tab" id="tab-advisor" aria-controls="panel-advisor" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-chat"></use></svg><span>AI advisor</span></button>
+        <button class="tab" role="tab" id="tab-portfolio" aria-controls="panel-portfolio" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg><span>Portfolio</span></button>
+        <button class="tab" role="tab" id="tab-saved" aria-controls="panel-saved" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-bookmark"></use></svg><span>Saved</span></button>
+        <button class="tab" role="tab" id="tab-admin" aria-controls="panel-admin" aria-selected="false" tabindex="-1" hidden><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg><span>Admin</span></button>
+      </div>
+      <span class="rail-label">Resources</span>
+      <div class="rail-links">
+        <a href="./"><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg><span>Website</span></a>
+        <a href="/docs" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-doc"></use></svg><span>API docs</span></a>
+      </div>
+      <div class="rail-foot">
+        <div class="rail-theme"><span>Theme</span><button class="icon-btn plain" id="themeToggle" type="button" aria-label="Switch theme"></button></div>
+        <div id="railUser"></div>
+      </div>
+    </nav>
+
+    <!-- ================= Property panel ================= -->
+    <aside class="app-sidebar" aria-label="Choose a property">
+      <div class="side-title"><span>My homes <span class="help" id="propCount" aria-live="polite"></span></span>
+        <button class="btn btn-primary btn-sm" type="button" data-add-home><svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg>Add home</button></div>
+      <div class="search-box">
+        <label for="propSearch" class="sr-only">Find a home</label>
+        <input class="input" id="propSearch" type="search" placeholder="Address, postcode, region" autocomplete="off">
+        <svg class="icon icon-sm" aria-hidden="true"><use href="#i-search"></use></svg>
+      </div>
+      <div class="filter-row">
+        <label class="toggle"><input type="checkbox" id="flaggedOnly"> Flagged only</label>
+      </div>
+      <ul class="property-list" id="propertyList" aria-label="Properties"></ul>
+      <div class="specs-box" id="propertySpecs"></div>
+    </aside>
+
+    <!-- ================= Main ================= -->
+    <main class="app-main" id="main">
+      <div class="topbar">
+        <nav class="crumbs" aria-label="Breadcrumb"><span>Workspace</span><svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"></use></svg><b id="crumbHere">Overview</b></nav>
+        <button class="cmdk-trigger" type="button" id="cmdkOpen" aria-haspopup="dialog"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-search"></use></svg><span>Search homes and pages…</span><kbd>Ctrl K</kbd></button>
+      </div>
+      <div class="callout callout-danger banner" id="errorBanner" role="alert">
+        <svg class="icon" aria-hidden="true"><use href="#i-alert"></use></svg>
+        <div><strong>Can't reach the calculation engine</strong><span id="errorText">Start the API with <span class="mono">uvicorn backend.main:app --port 8000</span> and reload.</span></div>
+      </div>
+
+      <div class="page-title property-only">
+        <div>
+          <span class="eyebrow" id="propEyebrow">Property</span>
+          <h1 id="propTitle">Loading…</h1>
+          <p class="sub" id="propSub"></p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" id="printBtn" type="button"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-doc"></use></svg>Export report</button>
+          <button class="btn btn-primary btn-sm" type="button" id="saveScenarioBtn"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-bookmark"></use></svg>Save scenario</button>
+        </div>
+      </div>
+      <p class="form-msg property-only" id="saveMsg" role="status" style="margin:-12px 0 16px"></p>
+
+      <!-- ================= First run: no homes yet ================= -->
+      <section class="welcome" id="emptyState" aria-labelledby="welcomeTitle">
+        <div class="welcome-card">
+          <div class="dz-icon"><svg class="icon icon-lg" aria-hidden="true"><use href="#i-home"></use></svg></div>
+          <h1 id="welcomeTitle">Add your first home</h1>
+          <p class="muted">Enter a few details from your EPC and your energy bills. Eco scores it, plans upgrades in the right order and estimates carbon, bills and value. Your homes are private to your account.</p>
+          <div class="dz-actions" style="margin-top:20px">
+            <button class="btn btn-primary" type="button" data-add-home><svg class="icon icon-sm" aria-hidden="true"><use href="#i-plus"></use></svg>Add a home</button>
+            <button class="btn btn-secondary" type="button" data-goto="vision"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-scan"></use></svg>Scan a photo first</button>
+          </div>
+          <ol class="welcome-steps">
+            <li><b>Have to hand</b> your EPC score (on the certificate) and last year's gas and electricity use in kWh.</li>
+            <li><b>Not sure of a value?</b> Pick the closest option; you can edit the home later.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ================= Overview (shadcn-style dashboard) ================= -->
+      <section class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="page-title">
+          <div>
+            <span class="eyebrow">Portfolio</span>
+            <h1>Overview</h1>
+            <p class="sub">Every home scored today and under the whole-home plan. All figures come from the engines.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" type="button" data-goto="portfolio"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-list"></use></svg>Open table</button>
+            <button class="btn btn-primary btn-sm" type="button" data-goto="vision"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-scan"></use></svg>Scan a photo</button>
+          </div>
+        </div>
+        <div class="stat-grid" id="ovStats" aria-live="polite">
+          <div class="stat-card skeleton" style="height:118px"></div><div class="stat-card skeleton" style="height:118px"></div><div class="stat-card skeleton" style="height:118px"></div><div class="stat-card skeleton" style="height:118px"></div>
+        </div>
+        <div class="ov-grid">
+          <article class="card chart-card span-2">
+            <div class="card-title">
+              <div><h2>Score today vs after the whole-home plan</h2><p class="help" style="margin-top:4px">Green Home Score, 0–100. Hover a row for details; click to open the home.</p></div>
+              <div class="legend" aria-label="Legend"><span><i style="background:var(--series-today)"></i>Today</span><span><i style="background:var(--series-after)"></i>After plan</span></div>
+            </div>
+            <div class="chart" id="chartDumbbell"></div>
+          </article>
+          <article class="card chart-card">
+            <div class="card-title"><div><h2>Homes by band today</h2><p class="help" style="margin-top:4px">Poor and Very Poor are flagged for retrofit.</p></div></div>
+            <div class="chart" id="chartBands"></div>
+          </article>
+          <article class="card chart-card">
+            <div class="card-title"><div><h2>Biggest improvement potential</h2><p class="help" style="margin-top:4px">Purchased-energy cut under the whole-home plan, top 8.</p></div></div>
+            <div class="chart" id="chartPotential"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= Assessment ================= -->
+      <section class="tab-panel" id="panel-assessment" role="tabpanel" aria-labelledby="tab-assessment" hidden>
+        <div class="baseline-grid">
+          <article class="card score-card" aria-labelledby="scoreCardTitle">
+            <div class="card-title"><h2 id="scoreCardTitle">Green Home Score</h2><span id="flagBadge"></span></div>
+            <div class="score-summary">
+              <div class="score-ring" id="baseRing" style="--val:0"><div class="score-inner"><div class="score-value" id="baseScore">–</div><div class="score-of">out of 100</div></div></div>
+              <div class="meta">
+                <div class="band-name" id="baseBand">–</div>
+                <div class="muted" style="font-size:.9375rem">After this plan: <strong class="num" id="projScoreInline" style="color:#fff">–</strong> <span id="projBandInline"></span></div>
+              </div>
+            </div>
+            <div id="driversWrap"></div>
+          </article>
+
+          <article class="card" aria-labelledby="compTitle">
+            <div class="card-title">
+              <h2 id="compTitle">Where the points come from</h2>
+              <span class="help">Sub-score 0–100 · <span style="color:var(--blue)">+ change after plan</span></span>
+            </div>
+            <div class="component-list" id="componentList"></div>
+          </article>
+        </div>
+
+        <div class="kpis" aria-live="polite">
+          <div class="kpi"><div class="kpi-label"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-trend"></use></svg>Score change</div><div class="kpi-value" id="kpiScore">–</div><div class="kpi-sub" id="kpiScoreSub"></div></div>
+          <div class="kpi"><div class="kpi-label"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-cloud"></use></svg>Carbon saved / year</div><div class="kpi-value" id="kpiCo2">–</div><div class="kpi-sub" id="kpiCo2Sub"></div></div>
+          <div class="kpi"><div class="kpi-label"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-pound"></use></svg>Running cost / year</div><div class="kpi-value" id="kpiBill">–</div><div class="kpi-sub" id="kpiBillSub"></div></div>
+          <div class="kpi"><div class="kpi-label"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-ruler"></use></svg>Plan cost · payback</div><div class="kpi-value" id="kpiCost">–</div><div class="kpi-sub" id="kpiCostSub"></div></div>
+        </div>
+
+        <div class="planner-grid">
+          <article class="card" aria-labelledby="measuresTitle">
+            <div class="card-title"><h2 id="measuresTitle">Choose upgrades</h2><span class="help">Changes rerun the engines</span></div>
+            <div class="presets" role="group" aria-label="Preset packages">
+              <button class="btn btn-ghost btn-sm preset" type="button" data-preset="fabric">Fabric first</button>
+              <button class="btn btn-ghost btn-sm preset" type="button" data-preset="heatpump">Heat pump</button>
+              <button class="btn btn-ghost btn-sm preset" type="button" data-preset="solar">Solar + battery</button>
+              <button class="btn btn-ghost btn-sm preset" type="button" data-preset="whole">Whole home</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="clearMeasures">Clear</button>
+            </div>
+            <fieldset style="border:0;padding:0;margin:0">
+              <legend class="sr-only">Retrofit measures</legend>
+              <ul class="measure-list" id="measureList"></ul>
+            </fieldset>
+          </article>
+
+          <article class="card" aria-labelledby="roadmapTitle" aria-live="polite">
+            <div class="card-title">
+              <h2 id="roadmapTitle">Fabric-first roadmap</h2>
+              <span id="injectedBadge"></span>
+            </div>
+            <div id="roadmap"></div>
+          </article>
+        </div>
+
+        <article class="card epc-card" aria-labelledby="epcTitle" style="margin-top:20px">
+          <div class="card-title">
+            <div><h2 id="epcTitle">EPC second opinion</h2><p class="help" style="margin-top:4px">Predicted <em>potential</em> EPC band from an XGBoost model trained on the EPC register. Independent of our score.</p></div>
+            <span class="badge badge-neutral">External ML · indicative</span>
+          </div>
+          <div id="epcPanel"><div class="skeleton" style="height:96px;width:100%"></div></div>
+        </article>
+
+        <div class="grid grid-2" style="margin-top:20px">
+          <article class="card" aria-labelledby="fuelTitle">
+            <div class="card-title"><h2 id="fuelTitle">Energy by fuel</h2><span class="help">kWh per year · today vs after</span></div>
+            <div class="fuel-chart" id="fuelChart"></div>
+            <div id="paradoxCallout" style="margin-top:18px"></div>
+          </article>
+          <article class="card" aria-labelledby="valueTitle">
+            <div class="card-title"><h2 id="valueTitle">Value &amp; green finance</h2><span class="badge badge-neutral">Indicative</span></div>
+            <div id="valuePanel"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ================= Vision ================= -->
+      <section class="tab-panel" id="panel-vision" role="tabpanel" aria-labelledby="tab-vision" hidden>
+        <div class="vision-grid">
+          <div>
+            <div class="dropzone" id="dropzone">
+              <div id="dzEmpty">
+                <div class="dz-icon"><svg class="icon icon-lg" aria-hidden="true"><use href="#i-scan"></use></svg></div>
+                <h3>Drop a photo of the home</h3>
+                <p>An exterior photo or a thermal-camera image. JPG, PNG or WebP up to 12 MB.<br>Processed in memory and never stored.</p>
+                <div class="dz-actions">
+                  <label class="btn btn-primary" for="visionFile"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-upload"></use></svg>Upload photo</label>
+                  <button class="btn btn-secondary" type="button" id="cameraBtn"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-camera"></use></svg>Live camera</button>
+                  <button class="btn btn-ghost" type="button" id="sampleExterior">Try sample photo</button>
+                  <button class="btn btn-ghost" type="button" id="sampleThermal">Try thermal sample</button>
+                </div>
+                <input type="file" id="visionFile" accept="image/jpeg,image/png,image/webp" hidden>
+              </div>
+              <div id="cameraWrap" hidden style="width:100%">
+                <div class="viz" style="text-align:center">
+                  <div class="live-frame">
+                    <video id="cameraVideo" class="live-video" playsinline autoplay muted aria-label="Live camera view with detections drawn over it"></video>
+                    <canvas id="liveCanvas" class="viz-overlay" aria-hidden="true"></canvas>
+                    <span class="live-chip" id="liveChip"><i></i><span id="liveChipText">Starting camera…</span></span>
+                  </div>
+                </div>
+                <div class="viz-toolbar">
+                  <div class="seg" role="group" aria-label="Live analysis mode">
+                    <button type="button" data-live-mode="exterior" aria-pressed="true">Exterior</button>
+                    <button type="button" data-live-mode="thermal" aria-pressed="false" title="Point at a thermal-camera screen or image">Thermal</button>
+                    <button type="button" data-live-mode="aerial" aria-pressed="false" title="Drone or top-down view of roofs">Aerial</button>
+                  </div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="btn btn-ghost btn-sm" type="button" id="liveToggle" aria-pressed="true">Pause</button>
+                    <button class="btn btn-ghost btn-sm" type="button" id="cameraFlip" title="Switch between front and back camera">Flip</button>
+                    <button class="btn btn-primary btn-sm" type="button" id="snapBtn"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-camera"></use></svg>Capture &amp; analyse</button>
+                    <button class="btn btn-ghost btn-sm" type="button" id="cameraCancel">Close</button>
+                  </div>
+                </div>
+                <p class="live-summary" id="liveSummary" aria-live="polite"></p>
+              </div>
+              <div id="vizWrap" hidden style="width:100%">
+                <div class="viz" style="text-align:center">
+                  <div style="position:relative;display:inline-block;max-width:100%">
+                    <img id="vizImg" alt="Uploaded photo with detections drawn over it" style="max-height:62vh;width:auto;max-width:100%">
+                    <canvas id="vizCanvas" class="viz-overlay" aria-hidden="true"></canvas>
+                    <span class="scan-line" id="vizScan" hidden></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="sam-note" id="samNote" hidden aria-live="polite"></p>
+            <div class="viz-toolbar" id="vizToolbar" hidden>
+              <div class="seg" role="group" aria-label="Analysis mode">
+                <button type="button" data-mode="auto" aria-pressed="true">Auto</button>
+                <button type="button" data-mode="exterior" aria-pressed="false">Exterior</button>
+                <button type="button" data-mode="thermal" aria-pressed="false">Thermal</button>
+                <button type="button" data-mode="aerial" aria-pressed="false" title="Top-down satellite or drone image of roofs">Aerial</button>
+              </div>
+              <div style="display:flex;gap:8px">
+                <label class="toggle"><input type="checkbox" id="showLabels" checked> Labels</label>
+                <button class="btn btn-ghost btn-sm" type="button" id="visionReset"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-refresh"></use></svg>New photo</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;gap:16px" aria-live="polite">
+            <article class="card" id="visionDetections" hidden>
+              <div class="card-title"><h2>Detections</h2><span class="help" id="visionMeta"></span></div>
+              <div id="thermalMeter"></div>
+              <ul class="det-list" id="detList"></ul>
+            </article>
+            <article class="card" id="visionSuggestions" hidden>
+              <div class="card-title"><h2>Suggested for the plan</h2></div>
+              <div style="display:grid;gap:8px" id="suggList"></div>
+              <button class="btn btn-primary" type="button" id="applySuggestions" style="width:100%;margin-top:14px"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-check"></use></svg>Apply confirmed to plan</button>
+              <p class="form-msg" id="applyMsg" style="margin-top:8px"></p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Advisor ================= -->
+      <section class="tab-panel" id="panel-advisor" role="tabpanel" aria-labelledby="tab-advisor" hidden>
+        <div class="callout callout-info" style="margin-bottom:16px">
+          <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+          <div><strong>Zero-math AI</strong>Your question becomes validated parameters, the engines rerun for the selected home, and every number in the reply is checked against their results. If a check fails, a template answer is used instead.</div>
+        </div>
+        <div class="card chat">
+          <div class="chat-log" id="chatLog" aria-live="polite" aria-label="Conversation"></div>
+          <div class="quick-prompts" role="group" aria-label="Suggested questions">
+            <button class="btn btn-ghost btn-sm quick" type="button" data-q="What if I replace my gas boiler with a heat pump?">Heat pump only</button>
+            <button class="btn btn-ghost btn-sm quick" type="button" data-q="What if I install rooftop solar panels and a home battery?">Solar + battery</button>
+            <button class="btn btn-ghost btn-sm quick" type="button" data-q="How much value could loft and wall insulation add?">Insulation value</button>
+            <button class="btn btn-ghost btn-sm quick" type="button" data-q="I have a £12,000 budget. What if I do insulation and a heat pump?">£12k budget</button>
+          </div>
+          <form class="chat-form" id="chatForm">
+            <label for="chatInput" class="sr-only">Ask a what-if question</label>
+            <input class="input" id="chatInput" type="text" placeholder="Ask a what-if question about this home…" autocomplete="off" required maxlength="500">
+            <button class="btn btn-primary" type="submit" id="chatSend"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-send"></use></svg><span>Ask</span></button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= Portfolio ================= -->
+      <section class="tab-panel" id="panel-portfolio" role="tabpanel" aria-labelledby="tab-portfolio" hidden>
+        <div class="page-title">
+          <div>
+            <span class="eyebrow">Portfolio</span>
+            <h1>Improvement potential</h1>
+            <p class="sub">Purchased-energy cut under the whole-home plan: 100 × (E<sub>baseline</sub> − E<sub>after</sub>) / E<sub>baseline</sub>. Gas and electricity shown separately.</p>
+          </div>
+        </div>
+        <div id="portfolioTable"><div class="skeleton" style="height:320px;width:100%"></div></div>
+      </section>
+
+      <!-- ================= Saved ================= -->
+      <section class="tab-panel" id="panel-saved" role="tabpanel" aria-labelledby="tab-saved" hidden>
+        <div class="card-title" style="margin-bottom:16px">
+          <div>
+            <h2 style="font-size:1.25rem">Saved scenarios</h2>
+            <p class="muted" style="font-size:.9375rem;margin-top:4px">Each one keeps an immutable snapshot of the audited result, the emission factors and the engine version.</p>
+          </div>
+        </div>
+        <div id="savedPanel" aria-live="polite"><div class="skeleton" style="height:72px;width:100%"></div></div>
+
+        <article class="card account-card" id="passwordCard" style="margin-top:28px">
+          <div class="card-title"><div><h2>Change password</h2><p class="help" style="margin-top:4px">Signs out every other device.</p></div></div>
+          <form id="passwordForm" class="pw-form" novalidate>
+            <div class="field"><label for="pwCurrent">Current password</label><input class="input" id="pwCurrent" name="current_password" type="password" autocomplete="current-password" required></div>
+            <div class="field"><label for="pwNew">New password</label><input class="input" id="pwNew" name="new_password" type="password" autocomplete="new-password" minlength="8" required></div>
+            <div class="field"><label for="pwConfirm">Confirm new password</label><input class="input" id="pwConfirm" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required></div>
+            <button class="btn btn-primary btn-sm" type="submit">Change password</button>
+            <p class="form-msg" id="pwMsg" role="status"></p>
+          </form>
+        </article>
+
+        <article class="card account-card" style="margin-top:16px">
+          <div class="card-title"><div><h2>Your data</h2><p class="help" style="margin-top:4px">Homes, scenarios and advisor history are stored against your account and visible only to you.</p></div></div>
+          <button class="btn btn-ghost btn-sm danger" type="button" id="deleteAccountBtn"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-trash"></use></svg>Delete my account and data</button>
+        </article>
+      </section>
+
+      <!-- ================= Admin (superusers only) ================= -->
+      <section class="tab-panel" id="panel-admin" role="tabpanel" aria-labelledby="tab-admin" hidden>
+        <div class="page-title">
+          <div><span class="eyebrow">Administration</span><h1>Accounts</h1>
+          <p class="sub">Activate, deactivate or remove accounts and manage admin roles. Every action is authorised on the server.</p></div>
+        </div>
+        <div id="adminPanel"></div>
+      </section>
+
+      <p class="help" style="margin-top:32px">Indicative estimates. Not a formal valuation or regulated mortgage advice.</p>
+    </main>
+  </div>
+
+  <script src="common.js"></script>
+  <script src="auth.js"></script>
+  <script src="vision.js"></script>
+  <script src="app.js"></script>
+  <script src="app-vision.js"></script>
+  <script src="dashboard.js"></script>
+  <script src="homes.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eco | Know how green your home is</title>
+  <meta name="description" content="For homes in the UK, with India coming soon. Eco scores a home out of 100, plans retrofits in the right physical order, reads photos with computer vision, and explains every number with an AI that cannot invent figures.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Damion&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/app-light.webp" type="image/webp">
+  <link rel="stylesheet" href="landing.css">
+  <script src="theme-init.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header header">
+    <div class="container">
+      <a class="brand" href="./" aria-label="Eco home"><span class="brand-word">Eco</span></a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#vision">Vision AI</a>
+        <a href="#security">Security</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch theme"></button>
+        <span id="accountSlot"><a class="btn btn-ghost btn-sm" href="login.html">Sign in</a></span>
+        <a class="btn btn-primary btn-sm hide-xs" href="app.html">Open app</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="container">
+        <a class="announce reveal" href="#vision"><b>NEW</b>Computer vision with Segment Anything <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <h1 id="heroTitle" class="reveal" style="--d:.06s">Know how green your home is. <span>Fix it in the right order.</span></h1>
+        <p class="lede reveal" style="--d:.12s">A transparent Green Home Score, a retrofit plan that respects physics, and an AI that can only quote numbers our engines calculated.</p>
+        <div class="cta reveal" style="--d:.18s">
+          <a class="btn btn-brand btn-lg" href="login.html?mode=signup&amp;next=app.html">Assess my home <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <a class="btn btn-outline btn-lg" href="app.html?sample=photo#vision"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-scan"></use></svg>Scan a photo</a>
+        </div>
+        <p class="fine reveal" style="--d:.22s">For homes in the United Kingdom · India <span class="soon">Coming soon</span> · Free account · Your homes stay private</p>
+
+        <figure class="preview reveal" style="--d:.28s">
+          <div class="frame">
+            <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>eco / overview</span></div>
+            <img class="shot-light" src="assets/app-light.webp" alt="The Eco dashboard: portfolio stat cards and a chart of every home's score today versus after the whole-home plan" width="1440" height="900" fetchpriority="high">
+            <img class="shot-dark" src="assets/app-dark.webp" alt="The Eco dashboard in dark mode" width="1440" height="900" loading="lazy">
+          </div>
+          <div class="preview-fade" aria-hidden="true"></div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Live numbers -->
+    <div class="container">
+      <dl class="stats reveal" aria-label="What Eco brings">
+        <div class="stat"><dt>Score components</dt><dd>7 <small>weighted</small></dd></div>
+        <div class="stat"><dt>Vision models</dt><dd>5 <small>incl. SAM</small></dd></div>
+        <div class="stat"><dt>AI numbers verified</dt><dd>100%</dd></div>
+        <div class="stat"><dt>Countries</dt><dd>UK <small>+ India soon</small></dd></div>
+      </dl>
+    </div>
+
+    <!-- Features -->
+    <section class="section" id="features" aria-labelledby="featTitle">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="badge">Features</span>
+          <h2 id="featTitle">Everything a retrofit decision needs</h2>
+          <p>Every figure comes from a documented engine or a trained model. The AI only explains.</p>
+        </div>
+        <div class="features">
+          <article class="card reveal"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-layers"></use></svg></span><h3>Green Home Score</h3><p>Seven weighted parts, 0–100, with every point traceable to the input that earned it.</p></article>
+          <article class="card reveal" style="--d:.05s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-graph"></use></svg></span><h3>Fabric-first planner</h3><p>Insulation before the heat pump, fitted to your budget by benefit per pound.</p></article>
+          <article class="card reveal" style="--d:.1s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-zap"></use></svg></span><h3>Gas and electricity apart</h3><p>Never one blended kWh figure, so a heat pump's real trade-off stays visible.</p></article>
+          <article class="card reveal"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-scan"></use></svg></span><h3>Vision AI</h3><p>Windows, doors, solar panels and heat leaks found in a photo, outlined by SAM.</p></article>
+          <article class="card reveal" style="--d:.05s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg></span><h3>Guarded AI advisor</h3><p>Ask "what if?". Any reply quoting an unverified number is replaced by a template.</p></article>
+          <article class="card reveal" style="--d:.1s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-trend"></use></svg></span><h3>Value and EPC outlook</h3><p>An indicative value range plus a second-opinion EPC band from a model trained on the register.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <hr class="separator">
+
+    <!-- Vision -->
+    <section class="section" id="vision" aria-labelledby="visionTitle">
+      <div class="container split">
+        <div class="reveal">
+          <span class="badge badge-brand">Computer vision</span>
+          <h2 id="visionTitle">Point a camera. Get evidence, not guesses.</h2>
+          <p class="lede">Detection finds what matters in seconds. Suggestions reach your plan only after you confirm them, and photos are never stored.</p>
+          <ul class="checks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg><span><b>Facade YOLOv8 + YOLO-World</b> for windows, doors, chimneys and outdoor units</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg><span><b>Segment Anything</b> turns every box into a precise outline</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg><span><b>Thermal and aerial modes</b> for heat-loss hotspots and rooftop solar</span></li>
+          </ul>
+          <div class="cta" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:28px">
+            <button class="btn btn-primary" type="button" id="runVisionDemo"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-play"></use></svg>Run live detection</button>
+            <a class="btn btn-outline" href="app.html#vision">Try your own photo</a>
+          </div>
+          <div class="vision-result" id="visionDemoResult" aria-live="polite"></div>
+        </div>
+        <div class="reveal" style="--d:.08s">
+          <div class="vision-frame">
+            <picture><source srcset="assets/eco_house_3d.webp" type="image/webp"><img id="visionDemoImg" src="assets/eco_house_3d.jpg" alt="Sample home used for the live detection demo" width="1200" height="896" loading="lazy"></picture>
+            <canvas id="visionDemoCanvas" aria-hidden="true"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="separator">
+
+    <!-- Security & privacy -->
+    <section class="section" id="security" aria-labelledby="secTitle">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="badge">Security &amp; privacy</span>
+          <h2 id="secTitle">Your home's data stays yours</h2>
+          <p>Built like a bank would expect: private by default, verified on every request, and easy to delete.</p>
+        </div>
+        <div class="features security-grid">
+          <article class="card reveal"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg></span><h3>Private homes</h3><p>Every home belongs to the account that added it. Nobody else can open, evaluate or ask the advisor about it.</p></article>
+          <article class="card reveal" style="--d:.05s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg></span><h3>Strong sign-in</h3><p>Passwords are hashed with bcrypt, failed sign-ins are throttled, and changing your password signs out every other device.</p></article>
+          <article class="card reveal" style="--d:.1s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-camera"></use></svg></span><h3>Photos never stored</h3><p>Images are analysed in memory and discarded. Suggestions reach your plan only after you confirm them.</p></article>
+          <article class="card reveal"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg></span><h3>No invented numbers</h3><p>The AI explains results but cannot calculate them. Any reply quoting an unverified figure is replaced.</p></article>
+          <article class="card reveal" style="--d:.05s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-layers"></use></svg></span><h3>Hardened by default</h3><p>Strict content security policy, rate limits, request-size limits and no tracking scripts on any page.</p></article>
+          <article class="card reveal" style="--d:.1s"><span class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-trash"></use></svg></span><h3>Delete in one click</h3><p>Remove a home, or your whole account and everything in it, from the app at any time.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <hr class="separator">
+
+    <!-- FAQ -->
+    <section class="section" id="faq" aria-labelledby="faqTitle">
+      <div class="container faq-wrap">
+        <div class="section-head reveal" style="text-align:left;margin:0">
+          <span class="badge">FAQ</span>
+          <h2 id="faqTitle">Questions, answered</h2>
+          <p>Can't find what you need? Ask the in-app advisor: it explains every number on your plan.</p>
+        </div>
+        <div class="faq reveal" style="--d:.06s">
+          <details><summary>What do I need to add my home?</summary><p>Your EPC score (printed on the certificate) and last year's gas and electricity use in kWh from your bills. Everything else has a sensible default you can change later.</p></details>
+          <details><summary>Is the result a valuation or mortgage advice?</summary><p>No. Scores, savings and value ranges are indicative estimates from documented models. They are not a formal valuation or regulated financial advice.</p></details>
+          <details><summary>How is the Green Home Score calculated?</summary><p>Seven weighted parts (EPC rating, energy intensity, insulation, heating, glazing, renewables and smart controls) combine into a score out of 100. The app shows how many points each part contributes.</p></details>
+          <details><summary>Why does the plan add measures I didn't pick?</summary><p>Some upgrades depend on others. A heat pump in an uninsulated, draughty home runs inefficiently, so the planner adds insulation and draught-proofing first and tells you why.</p></details>
+          <details><summary>Can the AI make up numbers?</summary><p>No. It only rewords results the engines calculated. A validator checks every number in its reply; if any figure can't be matched, a template answer is shown instead.</p></details>
+          <details><summary>Are my photos kept?</summary><p>No. Photos are processed in memory for detection and discarded straight away. Nothing is saved unless you confirm a suggestion, and even then only the chosen upgrade is stored.</p></details>
+          <details><summary>Which countries does Eco cover?</summary><p>Eco is built for homes in the United Kingdom today: it uses UK Energy Performance Certificates, UK carbon factors and prices in pounds. Support for homes in India is coming soon, using BEE star ratings, India's grid carbon factor and prices in rupees. Until then, results for Indian homes are not accurate, so the app only accepts UK homes.</p></details>
+          <details><summary>Who can see my homes?</summary><p>Only you. Every request is checked against your account, and another user asking for your home gets "not found". You can delete any home, or your account, at any time.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="padding-top:0" aria-labelledby="ctaTitle">
+      <div class="container">
+        <div class="cta-card reveal">
+          <h2 id="ctaTitle">See your home's plan in a few minutes</h2>
+          <p>Create a free account, add your home from your EPC and energy bills, and get an ordered plan you can trust. Your data stays private to you.</p>
+          <div class="cta">
+            <a class="btn btn-light btn-lg" href="login.html?mode=signup">Create free account <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+            <a class="btn btn-outline btn-lg" href="login.html">Sign in</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="./" aria-label="Eco home"><span class="brand-word">Eco</span></a>
+        <p>Know your home's green score. Get a retrofit plan you can trust.</p>
+      </div>
+      <nav aria-label="Product"><h4>Product</h4><a href="#features">Features</a><a href="#vision">Vision AI</a><a href="#faq">FAQ</a></nav>
+      <nav aria-label="Account"><h4>Account</h4><a href="login.html?mode=signup">Create account</a><a href="login.html">Sign in</a><a href="app.html">Open the app</a></nav>
+      <nav aria-label="Trust"><h4>Trust</h4><a href="#security">Security &amp; privacy</a><a href="/health" rel="nofollow">Service status</a></nav>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Eco · Serving the United Kingdom and India · Megathon X, Problem Statement 2</span>
+      <span>Indicative estimates, not a formal valuation or regulated mortgage advice.</span>
+    </div>
+  </footer>
+
+  <script src="common.js"></script>
+  <script src="auth.js"></script>
+  <script src="vision.js"></script>
+  <script src="landing.js"></script>
+</body>
+</html>

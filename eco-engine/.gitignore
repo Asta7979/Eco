@@ -1,0 +1,13 @@
+.env
+*.db
+__pycache__/
+.pytest_cache/
+*.log
+.auth_secret
+models/*.pt
+models/*.pth
+models/epc/*.pkl
+models/**/*.pt
+
+.vercel
+.env*

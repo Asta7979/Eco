@@ -1,0 +1,139 @@
+# Project Eco: multi-service stack.
+#
+#   gateway   public REST API, auth, Postgres, Alembic, deterministic engines, web portal  :8000
+#   vision    YOLOv8 (facade + solar) / YOLO-World / SAM / thermal       internal only  :8001
+#   llm       guarded what-if parser + explanation (holds the API key)   internal only  :8002
+#   physics   fast 1R1C + ISO 52016 (pyBuildingEnergy) simulations       internal only  :8003
+#   db        PostgreSQL 16                                             internal only
+#
+# Required in .env: POSTGRES_PASSWORD, ECO_AUTH_SECRET (32+ chars), ECO_SERVICE_TOKEN (32+ chars).
+# Run:  docker compose up --build -d     Legacy Streamlit: docker compose --profile legacy up
+
+x-service-common: &service-common
+  restart: unless-stopped
+  networks: [internal]
+  environment: &service-env
+    ENVIRONMENT: production
+    ECO_SERVICE_TOKEN: ${ECO_SERVICE_TOKEN:?Set ECO_SERVICE_TOKEN (32+ random chars) in .env}
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: eco-postgres
+    restart: unless-stopped
+    networks: [internal]
+    environment:
+      POSTGRES_USER: eco_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: eco_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eco_user -d eco_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: eco-gateway
+    restart: unless-stopped
+    networks: [internal, public]
+    environment:
+      ENVIRONMENT: production
+      POSTGRES_HOST: db
+      POSTGRES_USER: eco_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: eco_db
+      DATABASE_URL: ${DATABASE_URL:-}
+      ECO_AUTH_SECRET: ${ECO_AUTH_SECRET:-}
+      ECO_SUPERUSER_EMAILS: ${ECO_SUPERUSER_EMAILS:-}
+      ECO_SERVICE_TOKEN: ${ECO_SERVICE_TOKEN:?Set ECO_SERVICE_TOKEN (32+ random chars) in .env}
+      VISION_SERVICE_URL: http://vision:8001
+      LLM_SERVICE_URL: http://llm:8002
+      ECO_LLM_PROVIDER: ${ECO_LLM_PROVIDER:-}     # no keys here; only sizes the LLM call timeout
+      ECO_LLM_TIMEOUT_S: ${ECO_LLM_TIMEOUT_S:-}
+      PHYSICS_SERVICE_URL: http://physics:8003
+      # Optional: Supabase Auth (project root URL + publishable key; never the secret key)
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:-}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      ECO_TRUST_PROXY_HEADERS: ${ECO_TRUST_PROXY_HEADERS:-0}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db: {condition: service_healthy}
+      vision: {condition: service_started}
+      llm: {condition: service_started}
+      physics: {condition: service_started}
+
+  vision:
+    <<: *service-common
+    build:
+      context: .
+      dockerfile: services/Dockerfile.service
+      args: {SERVICE: vision_service, REQS: vision, PORT: "8001"}
+    container_name: eco-vision
+    volumes:
+      - ./models:/app/models:ro          # model weights are not baked into images (licences / size)
+      - ./models/clip:/app/weights/clip:ro   # CLIP text encoder for YOLO-World (no internet needed)
+    deploy:
+      resources:
+        limits: {memory: 6g}
+
+  llm:
+    <<: *service-common
+    build:
+      context: .
+      dockerfile: services/Dockerfile.service
+      args: {SERVICE: llm_service, REQS: llm, PORT: "8002"}
+    container_name: eco-llm
+    networks: [internal, egress]         # needs outbound HTTPS to the LLM provider only
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # lets OLLAMA_HOST reach Ollama on the host machine
+    environment:
+      <<: *service-env
+      # Optional; template answers without any of these. Pick one with ECO_LLM_PROVIDER.
+      ECO_LLM_PROVIDER: ${ECO_LLM_PROVIDER:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OLLAMA_HOST: ${OLLAMA_HOST:-}
+      ECO_LLM_MODEL: ${ECO_LLM_MODEL:-}           # empty = provider default
+      ECO_LLM_TIMEOUT_S: ${ECO_LLM_TIMEOUT_S:-}   # empty = 8 s (60 s for Ollama)
+
+  physics:
+    <<: *service-common
+    build:
+      context: .
+      dockerfile: services/Dockerfile.service
+      args: {SERVICE: physics_engine, REQS: physics, PORT: "8003"}
+    container_name: eco-physics
+
+  # Legacy Streamlit prototype: reads the synthetic test fixture and has no sign-in, so it
+  # is opt-in (docker compose --profile legacy up) and only reachable from this machine.
+  frontend:
+    profiles: ["legacy"]
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: eco-frontend
+    restart: unless-stopped
+    networks: [public]
+    environment:
+      - API_URL=http://gateway:8000
+    ports:
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      - gateway
+    command: streamlit run frontend/app.py --server.port 8501 --server.address 0.0.0.0
+
+networks:
+  internal:
+    internal: true       # no route to the internet: db, vision and physics are unreachable from outside
+  public: {}
+  egress: {}
+
+volumes:
+  postgres_data:

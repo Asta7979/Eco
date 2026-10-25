@@ -1,0 +1,12 @@
+.env
+.auth_secret
+*.db
+*.db-shm
+*.db-wal
+__pycache__/
+.pytest_cache/
+.git/
+*.log
+models/
+tests/
+.pytest_cache/

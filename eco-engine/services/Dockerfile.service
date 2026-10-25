@@ -1,0 +1,46 @@
+# One parameterised image recipe for the internal services (vision, llm, physics).
+#   docker build -f services/Dockerfile.service --build-arg SERVICE=llm_service --build-arg REQS=llm .
+# Build context is the eco-engine root so the shared `backend` library is available.
+FROM python:3.12-slim
+
+ARG SERVICE
+ARG REQS
+ARG PORT=8001
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONPATH=/app \
+    SERVICE_MODULE=services.${SERVICE}.app.main:app \
+    PORT=${PORT}
+
+WORKDIR /app
+
+# libgl1 / libglib2.0-0: OpenCV runtime (vision); git: pinned CLIP install (vision only).
+RUN apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 git \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements/ requirements/
+RUN if [ "$REQS" = "vision" ]; then \
+        pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
+        pip install "git+https://github.com/ultralytics/CLIP.git@a13192f8cb767260d7dfd98c843b0716593169e7"; \
+    fi && \
+    pip install -r requirements/${REQS}.txt && \
+    if [ -f "requirements/${REQS}-nodeps.txt" ]; then pip install --no-deps -r "requirements/${REQS}-nodeps.txt"; fi && \
+    apt-get purge -y git && apt-get autoremove -y
+
+COPY backend/ backend/
+COPY services/ services/
+COPY data/weather/ data/weather/
+
+RUN useradd --create-home --uid 10001 eco && mkdir -p /app/weights && chown -R eco:eco /app
+USER eco
+# Vision: Ultralytics looks for the CLIP text encoder in /app/weights/clip (mounted read-only),
+# so YOLO-World needs no internet access.
+RUN if [ "$REQS" = "vision" ]; then python -c "from ultralytics import settings; settings.update({'weights_dir': '/app/weights'})"; fi
+
+EXPOSE ${PORT}
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD python -c "import os,urllib.request; urllib.request.urlopen(f'http://127.0.0.1:{os.environ[\"PORT\"]}/health', timeout=4)" || exit 1
+
+CMD ["sh", "-c", "exec uvicorn \"$SERVICE_MODULE\" --host 0.0.0.0 --port \"$PORT\" --no-server-header"]

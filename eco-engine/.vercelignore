@@ -1,0 +1,10 @@
+.env
+.auth_secret
+*.db
+*.db-shm
+*.db-wal
+models/
+training/datasets/
+training/runs/
+__pycache__/
+.pytest_cache/

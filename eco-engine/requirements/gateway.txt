@@ -1,0 +1,13 @@
+-r base.txt
+# Database + migrations
+sqlalchemy>=2.0.28
+psycopg2-binary>=2.9.9
+alembic>=1.13
+# Deterministic engines (score, DAG, carbon, value, EPC predictor, fast physics)
+networkx>=3.2.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+xgboost>=2.0
+# Image header checks; in-process vision fallback only needs decoding (no torch here)
+opencv-python-headless>=4.9
+pillow>=11.0

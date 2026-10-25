@@ -1,0 +1,23 @@
+-r base.txt
+numpy>=1.26.0
+# Runtime dependencies of pyBuildingEnergy (EN ISO 52016-1 hourly simulation, EURAC, BSD-3).
+# pybuildingenergy itself is in physics-nodeps.txt, installed with --no-deps, because its
+# package metadata pins every dependency exactly, including urllib3==2.5.0, which conflicts
+# with the patched urllib3 required in base.txt.
+pvlib==0.13.0
+timezonefinder==8.1.0
+pandas>=2.2
+scipy>=1.13
+scikit-learn>=1.5
+holidays>=0.81
+workalendar>=17.0
+matplotlib>=3.9
+plotly>=5.20
+pyecharts>=2.0
+openpyxl>=3.1
+Jinja2>=3.1
+nbformat>=5.10
+rich>=13.0
+tqdm>=4.66
+psutil>=5.9
+requests>=2.32

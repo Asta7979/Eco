@@ -1,0 +1,2 @@
+# Installed with: pip install --no-deps -r requirements/physics-nodeps.txt (see physics.txt)
+pybuildingenergy==2.0.2
